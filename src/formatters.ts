@@ -17,7 +17,11 @@ export function parseTargetUrl(targetUrlParam: string | undefined) {
   }
 }
 
-export function formatResponseBody(res: express.Response, allResponseChunks: string) {
+export function formatResponseBody({ res, allResponseChunks, rawOutput }: { res: express.Response; allResponseChunks: string; rawOutput: boolean }) {
+  if (rawOutput) {
+    return allResponseChunks;
+  }
+
   const isStreamedResponse = res.getHeader('content-type') === 'text/event-stream' || res.getHeader('transfer-encoding') === 'chunked'
   if (!isStreamedResponse) {
     try {

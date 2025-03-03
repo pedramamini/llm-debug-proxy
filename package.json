@@ -2,6 +2,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/lodash": "^4.17.15",
+    "@types/yargs": "^17.0.33",
     "openai": "^4.85.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
@@ -14,7 +15,8 @@
     "express": "^4.21.2",
     "get-port": "^7.1.0",
     "lodash": "^4.17.21",
-    "undici-types": "^6.20.0"
+    "undici-types": "^6.20.0",
+    "yargs": "^17.7.2"
   },
   "scripts": {
     "start": "ts-node --transpileOnly src/index.ts"

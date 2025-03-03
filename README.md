@@ -22,6 +22,11 @@ npm install
 npm start
 ```
 
+Use `raw` argument to see raw responses:
+```
+npm start -- --raw
+```
+
 ### Send requests to the proxy
 
 The proxy listens on port 3000 by default. To forward a request to a target endpoint, include the URL-encoded target URL as a query parameter `target_url`
