@@ -32,7 +32,7 @@ npm start -- --raw
 The proxy listens on port 3000 by default. To forward a request to a target endpoint, include the URL-encoded target URL as a query parameter `target_url`
 
 ```sh
-curl http://localhost:3000?target_url=http%3A%2F%2Flocalhost%3A11434%2Fapi%2Fchat -d '{
+curl http://localhost:3000?target_url=http%3A%2F%2Flocalhost%3A11434%2Fv1%2Fchat%2Fcompletions -d '{
   "model": "llama3.2",
   "messages": [
     {
@@ -43,3 +43,5 @@ curl http://localhost:3000?target_url=http%3A%2F%2Flocalhost%3A11434%2Fapi%2Fcha
   "stream": true
 }'
 ```
+
+
