@@ -37,6 +37,7 @@ export function formatResponseBody(res: express.Response, allResponseChunks: str
   console.log(`Chunks: ${allResponseChunks.length}`);
   console.log(`Lines: ${lines.length}`);
   console.log(`Server-sent events (SSE): ${hasSSEChunks.valueOf()}`);
+  console.log(`-----\n`);
 
   if (!hasSSEChunks) {
     return lines.map(line => {
