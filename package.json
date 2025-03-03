@@ -17,10 +17,10 @@
     "undici-types": "^6.20.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node --transpileOnly src/index.ts"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "author": "Søren Louv-Jansen",
+  "license": "Apache-2.0",
+  "description": "Node.js proxy server for debugging OpenAI-compatible chat completions requests."
 }
