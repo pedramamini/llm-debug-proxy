@@ -4,7 +4,7 @@ import { request as httpRequest } from 'http';
 import { PassThrough } from 'stream';
 import { formatRequestBody, formatResponseBody, parseTargetUrl } from './formatters';
 
-export function startServer({ rawOutput }: { rawOutput: boolean }) {
+export function startServer({ rawOutput, omitTools }: { rawOutput: boolean, omitTools: boolean }) {
   const app = express();
   const PORT = 3000;
 
@@ -49,7 +49,7 @@ export function startServer({ rawOutput }: { rawOutput: boolean }) {
 
           console.log(''); // Add a newline for readability
           console.log('===== Request Body =====');
-          console.log(formatRequestBody(requestData), '\n');
+          console.log(formatRequestBody({ requestData, omitTools }), '\n');
 
           console.log(`===== Response Body =====`);
           console.log(formatResponseBody({ res, allResponseChunks, rawOutput }));

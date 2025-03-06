@@ -5,11 +5,15 @@ import { startServer } from './api';
 // Parse CLI arguments using yargs
 const argv = yargs(hideBin(process.argv))
   .option('raw', {
-    alias: 'r',
     type: 'boolean',
     default: false,
-    description: 'Output raw request and response data'
+    description: 'Output raw response data instead of formatting it'
+  })
+  .option('omit-tools', {
+    type: 'boolean',
+    default: false,
+    description: 'Omit the "tools" property from the request output'
   })
   .parseSync();
 
-startServer({ rawOutput: argv.raw })
+startServer({ rawOutput: argv.raw, omitTools: argv.omitTools });

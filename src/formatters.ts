@@ -1,4 +1,5 @@
 import express from 'express';
+import { omit } from 'lodash';
 import OpenAI from 'openai';
 import { URL } from 'url';
 
@@ -66,11 +67,13 @@ export function formatResponseBody({ res, allResponseChunks, rawOutput }: { res:
   return JSON.stringify(mergedMessage, null, 2);
 }
 
-export function formatRequestBody(requestData: string) {
+export function formatRequestBody({ requestData, omitTools }: { requestData: string; omitTools: boolean }) {
   try {
     const parsed = JSON.parse(requestData);
+    if (omitTools) {
+      return JSON.stringify(omit(parsed, 'tools'), null, 2);
+    }
     return JSON.stringify(parsed, null, 2);
-    // return JSON.stringify(omit(parsed, 'tools'), null, 2);
   } catch (e) {
     return requestData;
   }
