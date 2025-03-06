@@ -6,25 +6,43 @@
 
 ## Installation
 
-1. **Clone the repository:**
+Ensure you have [Node.js](https://nodejs.org/) installed, then install dependencies:
 
 ```sh
-git clone https://github.com/elastic/llm-debug-proxy.git
-cd llm-debug-proxy
 npm install
 ```
 
-## Usage
+### Starting the Server
 
-### Start proxy
+To start the server with default settings:
 
 ```sh
 npm start
 ```
 
-Use `raw` argument to see raw responses:
-```
+It will now be available for requests on http://localhost:3000
+
+### Command-Line Options
+
+You can modify the server behavior using the following options:
+
+| Option         | Type    | Default | Description                                         |
+|---------------|--------|---------|-----------------------------------------------------|
+| `--raw`       | Boolean | `false` | Output raw response data instead of formatting it. |
+| `--omit-tools` | Boolean | `false` | Omit the `tools` property from the request output. |
+
+### Example Usage
+
+Start the server and output raw response data:
+
+```sh
 npm start -- --raw
+```
+
+Start the server and omit the `tools` property from the request output:
+
+```sh
+npm start -- --omit-tools
 ```
 
 ### Send requests to the proxy
