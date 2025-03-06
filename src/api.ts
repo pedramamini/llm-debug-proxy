@@ -3,6 +3,7 @@ import { request as httpsRequest } from 'https';
 import { request as httpRequest } from 'http';
 import { PassThrough } from 'stream';
 import { formatRequestBody, formatResponseBody, parseTargetUrl } from './formatters';
+import { isNumber } from 'lodash';
 
 export function startServer({ rawOutput, omitTools }: { rawOutput: boolean, omitTools: boolean }) {
   const app = express();
@@ -44,7 +45,8 @@ export function startServer({ rawOutput, omitTools }: { rawOutput: boolean, omit
           }
 
           const { statusCode, statusMessage } = proxyRes;
-          const statusIcon = statusCode !== 200 ? '❌️' : '✅️';
+          const isSuccess = statusCode && statusCode >= 200 && statusCode < 300;
+          const statusIcon = isSuccess ? '✅️' : '❌️';
           console.log(`${statusIcon} ${statusCode} ${statusMessage}`);
 
           console.log(''); // Add a newline for readability
@@ -83,5 +85,10 @@ export function startServer({ rawOutput, omitTools }: { rawOutput: boolean, omit
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`Try sending a cURL request:\n`);
+    console.log(`
+curl -X POST \\
+http://localhost:${PORT}/?target_url=https://jsonplaceholder.typicode.com/posts \\
+-d '{"title": "foo", "body": "bar", "userId": 1}'`);
   });
 }
