@@ -2,6 +2,7 @@ import express from 'express';
 import { omit } from 'lodash';
 import OpenAI from 'openai';
 import { URL } from 'url';
+import { CliOptions } from './cli';
 
 export function parseTargetUrl(targetUrlParam: string | undefined) {
   if (!targetUrlParam) {
@@ -18,8 +19,8 @@ export function parseTargetUrl(targetUrlParam: string | undefined) {
   }
 }
 
-export function formatResponseBody({ res, allResponseChunks, rawOutput }: { res: express.Response; allResponseChunks: string; rawOutput: boolean }) {
-  if (rawOutput) {
+export function formatResponseBody({ res, allResponseChunks, cliOptions }: { res: express.Response; allResponseChunks: string; cliOptions: CliOptions }) {
+  if (cliOptions.raw) {
     return allResponseChunks;
   }
 
@@ -67,11 +68,14 @@ export function formatResponseBody({ res, allResponseChunks, rawOutput }: { res:
   return JSON.stringify(mergedMessage, null, 2);
 }
 
-export function formatRequestBody({ requestData, omitTools }: { requestData: string; omitTools: boolean }) {
+export function formatRequestBody({ requestData, cliOptions }: { requestData: string, cliOptions: CliOptions }) {
   try {
     const parsed = JSON.parse(requestData);
-    if (omitTools) {
+    if (cliOptions.tools === 'none') {
       return JSON.stringify(omit(parsed, 'tools'), null, 2);
+    } else if (cliOptions.tools === 'name') {
+      parsed.tools = parsed.tools.map((tool: any) => tool.function.name); // only show tool names
+      return JSON.stringify(parsed, null, 2);
     }
     return JSON.stringify(parsed, null, 2);
   } catch (e) {
