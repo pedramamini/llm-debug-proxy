@@ -3,6 +3,7 @@ import { omit } from 'lodash';
 import OpenAI from 'openai';
 import { URL } from 'url';
 import { CliOptions } from './cli';
+import { ChatCompletionToolRunnerParams } from 'openai/lib/ChatCompletionRunner';
 
 export function parseTargetUrl(targetUrlParam: string | undefined) {
   if (!targetUrlParam) {
@@ -90,12 +91,15 @@ export function formatRequestBody({
   cliOptions: CliOptions;
 }) {
   try {
-    const parsed = JSON.parse(requestData);
+    const parsed = JSON.parse(
+      requestData,
+    ) as ChatCompletionToolRunnerParams<never>;
     if (cliOptions.tools === 'none') {
       return JSON.stringify(omit(parsed, 'tools'), null, 2);
     } else if (cliOptions.tools === 'name') {
-      parsed.tools = parsed.tools.map((tool: any) => tool.function.name); // only show tool names
-      return JSON.stringify(parsed, null, 2);
+      const toolNames = parsed.tools.map((tool) => tool.function.name); // only show tool names
+      const output = { ...parsed, tools: toolNames };
+      return JSON.stringify(output, null, 2);
     }
     return JSON.stringify(parsed, null, 2);
   } catch (e) {

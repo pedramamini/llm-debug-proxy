@@ -1,13 +1,13 @@
-import { defineConfig, globalIgnores } from 'eslint/config';
-import js from '@eslint/js';
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import prettierPlugin from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
-import globals from "globals";
+const { defineConfig, globalIgnores } = require('eslint/config');
+const js = require('@eslint/js');
+const tsParser = require('@typescript-eslint/parser');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const prettierPlugin = require('eslint-plugin-prettier');
+const prettierConfig = require('eslint-config-prettier');
+const globals = require('globals');
 
-export default defineConfig([
-  globalIgnores(['dist/**']),
+module.exports = defineConfig([
+  globalIgnores(['dist/**', 'jest.config.ts']),
   {
     ...js.configs.recommended,
     files: ['**/*.ts'],
@@ -31,6 +31,7 @@ export default defineConfig([
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/ban-ts-comment': 'off'
     },
   },
 ]);
