@@ -2,11 +2,12 @@ import express, { Request, Response } from 'express';
 import { request as httpsRequest } from 'https';
 import { request as httpRequest } from 'http';
 import { PassThrough } from 'stream';
-import { formatRequestBody, formatResponseBody, parseTargetUrl } from './formatters';
-import { isNumber } from 'lodash';
+import {
+  formatRequestBody,
+  formatResponseBody,
+  parseTargetUrl,
+} from './formatters';
 import { CliOptions } from './cli';
-
-
 
 export function startServer({ cliOptions }: { cliOptions: CliOptions }) {
   const app = express();
@@ -27,24 +28,25 @@ export function startServer({ cliOptions }: { cliOptions: CliOptions }) {
     };
 
     // Create the outbound HTTPS request
-    const request = targetUrl.protocol === 'https:' ? httpsRequest : httpRequest;
+    const request =
+      targetUrl.protocol === 'https:' ? httpsRequest : httpRequest;
     const proxyReq = request(targetUrl, options, (proxyRes) => {
       res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
 
       let allResponseChunks = '';
       const responsePassThrough = new PassThrough();
       responsePassThrough.on('data', (chunk: Buffer) => {
-        allResponseChunks += chunk.toString()
+        allResponseChunks += chunk.toString();
       });
 
       responsePassThrough.on('end', () => {
         try {
           console.log(`────────────────────────────────────────────────────
 🌍  Target URL: ${targetUrl}
-────────────────────────────────────────────────────\n`)
-          const interceptorName = res.getHeader('Elastic-Interceptor')
+────────────────────────────────────────────────────\n`);
+          const interceptorName = res.getHeader('Elastic-Interceptor');
           if (interceptorName) {
-            console.log(`🚀  Interceptor: ${interceptorName || 'N/A'}`)
+            console.log(`🚀  Interceptor: ${interceptorName || 'N/A'}`);
           }
 
           const { statusCode, statusMessage } = proxyRes;
@@ -57,9 +59,11 @@ export function startServer({ cliOptions }: { cliOptions: CliOptions }) {
           console.log(formatRequestBody({ requestData, cliOptions }), '\n');
 
           console.log(`===== Response Body =====`);
-          console.log(formatResponseBody({ res, allResponseChunks, cliOptions }));
+          console.log(
+            formatResponseBody({ res, allResponseChunks, cliOptions }),
+          );
         } catch (e) {
-          console.log('Error:', e)
+          console.log('Error:', e);
         }
       });
 
@@ -83,8 +87,8 @@ export function startServer({ cliOptions }: { cliOptions: CliOptions }) {
 
   app.all('*', (req: Request, res: Response) => {
     console.log(`Hitting catch all route: ${req.method} ${req.path}`);
-    res.send('Noting to see here. Try POST /chat/completions')
-  })
+    res.send('Noting to see here. Try POST /chat/completions');
+  });
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

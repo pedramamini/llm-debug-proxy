@@ -1,4 +1,3 @@
-
 import { startServer } from './api';
 import { getCliOptions } from './cli';
 

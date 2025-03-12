@@ -19,15 +19,25 @@ export function parseTargetUrl(targetUrlParam: string | undefined) {
   }
 }
 
-export function formatResponseBody({ res, allResponseChunks, cliOptions }: { res: express.Response; allResponseChunks: string; cliOptions: CliOptions }) {
+export function formatResponseBody({
+  res,
+  allResponseChunks,
+  cliOptions,
+}: {
+  res: express.Response;
+  allResponseChunks: string;
+  cliOptions: CliOptions;
+}) {
   if (cliOptions.raw) {
     return allResponseChunks;
   }
 
-  const isStreamedResponse = res.getHeader('content-type') === 'text/event-stream' || res.getHeader('transfer-encoding') === 'chunked'
+  const isStreamedResponse =
+    res.getHeader('content-type') === 'text/event-stream' ||
+    res.getHeader('transfer-encoding') === 'chunked';
   if (!isStreamedResponse) {
     try {
-      return JSON.stringify(JSON.parse(allResponseChunks), null, 2)
+      return JSON.stringify(JSON.parse(allResponseChunks), null, 2);
     } catch (e) {
       return allResponseChunks;
     }
@@ -35,10 +45,9 @@ export function formatResponseBody({ res, allResponseChunks, cliOptions }: { res
 
   const lines = allResponseChunks
     .split(/\r?\n/) // Handle both \n and \r\n
-    .map(line => line.trim())
+    .map((line) => line.trim());
 
-
-  const hasSSEChunks = lines.some(line => line.startsWith('data:'));
+  const hasSSEChunks = lines.some((line) => line.startsWith('data:'));
 
   console.log(`Chunks: ${allResponseChunks.length}`);
   console.log(`Lines: ${lines.length}`);
@@ -46,20 +55,25 @@ export function formatResponseBody({ res, allResponseChunks, cliOptions }: { res
   console.log(`-----\n`);
 
   if (!hasSSEChunks) {
-    return lines.map(line => {
-      try {
-        const parsedLine = JSON.parse(line);
-        return parsedLine.message.content;
-      } catch (e) {
-        return line;
-      }
-    }).join('')
+    return lines
+      .map((line) => {
+        try {
+          const parsedLine = JSON.parse(line);
+          return parsedLine.message.content;
+        } catch (e) {
+          return line;
+        }
+      })
+      .join('');
   }
 
-  const parsedSSEChunks = lines.filter(line => line.startsWith('data:') && line !== 'data: [DONE]') // Filter out non-data and [DONE]
-    .map(line => JSON.parse(line.slice(5).trim()));
+  const parsedSSEChunks = lines
+    .filter((line) => line.startsWith('data:') && line !== 'data: [DONE]') // Filter out non-data and [DONE]
+    .map((line) => JSON.parse(line.slice(5).trim()));
 
-  const isOpenAIChunk = parsedSSEChunks.some(chunk => chunk.object === 'chat.completion.chunk' && chunk.choices)
+  const isOpenAIChunk = parsedSSEChunks.some(
+    (chunk) => chunk.object === 'chat.completion.chunk' && chunk.choices,
+  );
   if (!isOpenAIChunk) {
     return JSON.stringify(parsedSSEChunks, null, 2);
   }
@@ -68,7 +82,13 @@ export function formatResponseBody({ res, allResponseChunks, cliOptions }: { res
   return JSON.stringify(mergedMessage, null, 2);
 }
 
-export function formatRequestBody({ requestData, cliOptions }: { requestData: string, cliOptions: CliOptions }) {
+export function formatRequestBody({
+  requestData,
+  cliOptions,
+}: {
+  requestData: string;
+  cliOptions: CliOptions;
+}) {
   try {
     const parsed = JSON.parse(requestData);
     if (cliOptions.tools === 'none') {
@@ -85,10 +105,11 @@ export function formatRequestBody({ requestData, cliOptions }: { requestData: st
 
 interface UnvalidatedMessage {
   content: string;
-  tool_calls: NonNullable<OpenAI.ChatCompletionChunk['choices'][0]['delta']['tool_calls']>;
+  tool_calls: NonNullable<
+    OpenAI.ChatCompletionChunk['choices'][0]['delta']['tool_calls']
+  >;
 }
 
-type Delta = OpenAI.ChatCompletionChunk['choices'][0]['delta'];
 export const mergeOpenAIChunks = (chunks: OpenAI.ChatCompletionChunk[]) => {
   const message = chunks.reduce<UnvalidatedMessage>(
     (prev, chunk) => {
@@ -120,7 +141,7 @@ export const mergeOpenAIChunks = (chunks: OpenAI.ChatCompletionChunk[]) => {
 
       return prev;
     },
-    { content: '', tool_calls: [] }
+    { content: '', tool_calls: [] },
   );
 
   return message;
