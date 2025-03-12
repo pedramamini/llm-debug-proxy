@@ -1,20 +1,25 @@
+import { defineConfig, globalIgnores } from 'eslint/config';
 import js from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import globals from "globals";
 
-export default [
-  js.configs.recommended,
+export default defineConfig([
+  globalIgnores(['dist/**']),
   {
-    env: {
-      node: true,
-    },
-    files: ['**/*.ts', '**/*.tsx'],
+    ...js.configs.recommended,
+    files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
+      },
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+        console: true,
       },
     },
     plugins: {
@@ -28,4 +33,4 @@ export default [
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
-];
+]);
