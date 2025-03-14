@@ -20,7 +20,7 @@ To start the server with default settings:
 npm start
 ```
 
-It will now be available for requests on http://localhost:3000
+It will now be available for requests on http://localhost:3000. You can send requests to `http://localhost:3000?target_url=<LLM chat completion url>`
 
 ### Command-Line Options
 
@@ -47,7 +47,7 @@ npm start -- --omit-tools
 
 ### Send requests to the proxy
 
-The proxy listens on port 3000 by default. To forward a request to a target endpoint, include the URL-encoded target URL as a query parameter `target_url`
+The proxy listens on port 3000 by default. To forward a request to an LLM, include the [URL-encoded](https://www.urlencoder.io/) target URL as a query parameter `target_url`
 
 ```sh
 curl http://localhost:3000?target_url=http%3A%2F%2Flocalhost%3A11434%2Fv1%2Fchat%2Fcompletions -d '{
