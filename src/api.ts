@@ -1,6 +1,12 @@
 import express, { Request, Response } from 'express';
-import { request as httpsRequest } from 'https';
-import { request as httpRequest } from 'http';
+import {
+  request as httpsRequest,
+  RequestOptions as HttpsRequestOptions,
+} from 'https';
+import {
+  request as httpRequest,
+  RequestOptions as HttpRequestOptions,
+} from 'http';
 import { PassThrough } from 'stream';
 import {
   formatRequestBody,
@@ -22,8 +28,9 @@ export function startServer({ cliOptions }: { cliOptions: CliOptions }) {
     }
 
     // Setup options for the outbound request
-    const options = {
+    const options: HttpRequestOptions | HttpsRequestOptions = {
       method: req.method,
+      // Headers: override the host header for the target.
       headers: { ...req.headers, host: targetUrl.host },
     };
 
@@ -87,15 +94,28 @@ export function startServer({ cliOptions }: { cliOptions: CliOptions }) {
 
   app.all('*', (req: Request, res: Response) => {
     console.log(`Hitting catch all route: ${req.method} ${req.path}`);
+
+    const targetUrlParam = req.query.target_url as string;
+    const targetUrl = parseTargetUrl(targetUrlParam);
+    if (targetUrl) {
+      const options: HttpRequestOptions | HttpsRequestOptions = {
+        method: req.method,
+        // Headers: override the host header for the target.
+        headers: { ...req.headers, host: targetUrl.host },
+      };
+      console.log('options', options);
+    }
+
+    // Setup options for the outbound request
+    const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+    console.log('Full URL:', fullUrl);
+    console.log('Full hostname:', req.hostname);
+    console.log('Subdomains:', req.subdomains);
+
     res.send('Noting to see here. Try POST /chat/completions');
   });
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log(`Try sending a cURL request:\n`);
-    console.log(`
-curl -X POST \\
-http://localhost:${PORT}/?target_url=https://jsonplaceholder.typicode.com/posts \\
--d '{"title": "foo", "body": "bar", "userId": 1}'`);
   });
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express from 'express';
 import { omit } from 'lodash';
 import OpenAI from 'openai';
@@ -14,7 +15,7 @@ export function parseTargetUrl(targetUrlParam: string | undefined) {
   const decodedUrl = decodeURIComponent(targetUrlParam);
   try {
     return new URL(decodedUrl);
-  } catch (err) {
+  } catch (e) {
     console.log(`target_url query parameter is invalid: "${decodedUrl}"`);
     return;
   }
@@ -97,12 +98,15 @@ export function formatRequestBody({
     if (cliOptions.tools === 'none') {
       return JSON.stringify(omit(parsed, 'tools'), null, 2);
     } else if (cliOptions.tools === 'name') {
-      const toolNames = parsed.tools.map((tool) => tool.function.name); // only show tool names
+      const toolNames = parsed.tools.map(
+        (tool) => tool.name ?? tool?.function?.name,
+      ); // only show tool names
       const output = { ...parsed, tools: toolNames };
       return JSON.stringify(output, null, 2);
     }
     return JSON.stringify(parsed, null, 2);
-  } catch (e) {
+  } catch (e: any) {
+    console.error(`Error parsing request data: ${e.message}\n`);
     return requestData;
   }
 }
